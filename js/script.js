@@ -114,12 +114,14 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.value = value;
     });
     
-    // Download functionality
+    // Download functionality with filename as receipt number
     document.getElementById('downloadBtn').addEventListener('click', function() {
         const receipt = document.getElementById('receiptPreview');
+        const noKwitansi = document.getElementById('noKwitansi').value.trim();
+        const filename = noKwitansi ? noKwitansi.replace(/[\/\\?%*:|"<> ]/g, '_') + '.png' : 'kwitansi.png';
         html2canvas(receipt).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'kwitansi.png';
+            link.download = filename;
             link.href = canvas.toDataURL();
             link.click();
         }).catch(error => {
@@ -128,3 +130,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+</create_file>
