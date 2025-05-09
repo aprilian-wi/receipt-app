@@ -1,0 +1,74 @@
+/* Custom styles */
+.mrs-saint-delafield-regular {
+    font-family: "Mrs Saint Delafield", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Form input styling */
+input[type="text"],
+input[type="date"] {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+}
+
+input[readonly] {
+    background-color: #f8fafc;
+}
+
+/* Receipt preview styling */
+#receiptPreview {
+    min-height: 600px;
+    background-color: white;
+    position: relative;
+    font-family: Arial, sans-serif;
+}
+
+#receiptPreview h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+#receiptPreview .space-y-4 p {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: baseline;
+}
+
+#receiptPreview .space-y-4 p span {
+    margin-left: 0.5rem;
+    flex: 1;
+}
+
+/* Signature area */
+#previewPenerima {
+    font-size: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Underline style */
+.border-t.border-black {
+    border-top: 1px solid #000;
+    width: 100%;
+}
+
+/* Print styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #receiptPreview, #receiptPreview * {
+        visibility: visible;
+    }
+    #receiptPreview {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+}
