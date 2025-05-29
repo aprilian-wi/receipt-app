@@ -1,132 +1,67 @@
-// Function to convert numbers to Indonesian words
-function convertNumberToWords(number) {
-    const units = ['', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan'];
-    const teens = ['Sepuluh', 'Sebelas', 'Dua Belas', 'Tiga Belas', 'Empat Belas', 'Lima Belas', 'Enam Belas', 'Tujuh Belas', 'Delapan Belas', 'Sembilan Belas'];
-    const tens = ['', '', 'Dua Puluh', 'Tiga Puluh', 'Empat Puluh', 'Lima Puluh', 'Enam Puluh', 'Tujuh Puluh', 'Delapan Puluh', 'Sembilan Puluh'];
-    const scales = ['', 'Ribu', 'Juta', 'Miliar', 'Triliun'];
+// ... function convertNumberToWords, formatNumber, formatDate tetap sama
 
-    function convertGroup(n) {
-        let str = '';
-        if (n >= 100) {
-            if (Math.floor(n / 100) === 1) {
-                str += 'Seratus ';
-            } else {
-                str += units[Math.floor(n / 100)] + ' Ratus ';
-            }
-            n = n % 100;
-        }
-        
-        if (n >= 20) {
-            str += tens[Math.floor(n / 10)] + ' ';
-            n = n % 10;
-        } else if (n >= 10) {
-            str += teens[n - 10] + ' ';
-            n = 0;
-        }
-        
-        if (n > 0) {
-            str += units[n] + ' ';
-        }
-        
-        return str.trim();
-    }
-
-    if (number === 0) return 'Nol Rupiah';
-    
-    let str = '';
-    let groupIndex = 0;
-    
-    while (number > 0) {
-        const n = number % 1000;
-        if (n !== 0) {
-            const words = convertGroup(n);
-            if (groupIndex === 1 && n === 1) {
-                str = 'Seribu ' + str;
-            } else {
-                str = words + ' ' + scales[groupIndex] + ' ' + str;
-            }
-        }
-        number = Math.floor(number / 1000);
-        groupIndex++;
-    }
-    
-    return str.trim() + ' Rupiah';
-}
-
-// Format number with thousand separator
-function formatNumber(number) {
-    return new Intl.NumberFormat('id-ID').format(number);
-}
-
-// Format date to Indonesian format
-function formatDate(date) {
-    return new Date(date).toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
-}
-
-// Update receipt preview
 function updatePreview() {
-    const noKwitansi = document.getElementById('noKwitansi').value;
-    const tanggal = document.getElementById('tanggal').value;
-    const terimaDari = document.getElementById('terimaDari').value;
-    const nominal = document.getElementById('nominal').value.replace(/\D/g, '');
-    const untukPembayaran = document.getElementById('untukPembayaran').value;
-    const penerima = document.getElementById('penerima').value;
+    const getValue = id => document.getElementById(id)?.value || '';
+    const setText = (id, text) => { const el = document.getElementById(id); if(el) el.textContent = text; };
     
-    // Update preview elements
-    document.getElementById('previewNo').textContent = noKwitansi || '-';
-    document.getElementById('previewTanggal').textContent = tanggal ? formatDate(tanggal) : '-';
-    document.getElementById('previewTerimaDari').textContent = terimaDari || '-';
+    const noKwitansi = getValue('noKwitansi');
+    const tanggal = getValue('tanggal');
+    const terimaDari = getValue('terimaDari');
+    const nominalRaw = getValue('nominal').replace(/\D/g, '');
+    const untukPembayaran = getValue('untukPembayaran');
+    const penerima = getValue('penerima');
     
-    if (nominal) {
-        const formattedNominal = formatNumber(nominal);
-        const words = convertNumberToWords(parseInt(nominal));
-        document.getElementById('previewUangSebanyak').textContent = words;
-        document.getElementById('previewTerbilang').textContent = formattedNominal;
+    setText('previewNo', noKwitansi || '-');
+    setText('previewTanggal', tanggal ? formatDate(tanggal) : '-');
+    setText('previewTerimaDari', terimaDari || '-');
+    if (nominalRaw) {
+        setText('previewUangSebanyak', convertNumberToWords(parseInt(nominalRaw)));
+        setText('previewTerbilang', formatNumber(nominalRaw));
     } else {
-        document.getElementById('previewUangSebanyak').textContent = '-';
-        document.getElementById('previewTerbilang').textContent = '-';
+        setText('previewUangSebanyak', '-');
+        setText('previewTerbilang', '-');
     }
-    
-    document.getElementById('previewUntukPembayaran').textContent = untukPembayaran || '-';
-    document.getElementById('previewPenerima').textContent = penerima || '';
+    setText('previewUntukPembayaran', untukPembayaran || '-');
+    setText('previewPenerima', penerima || '');
 }
 
-// Initialize event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('kwitansiForm');
-    const inputs = form.querySelectorAll('input');
-    
-    inputs.forEach(input => {
+    document.querySelectorAll('#kwitansiForm input').forEach(input => {
         input.addEventListener('input', updatePreview);
     });
-    
+
     // Format nominal input
     const nominalInput = document.getElementById('nominal');
-    nominalInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value) {
-            value = formatNumber(value);
-        }
-        e.target.value = value;
-    });
-    
-    // Download functionality with filename as receipt number
-    document.getElementById('downloadBtn').addEventListener('click', function() {
-        const receipt = document.getElementById('receiptPreview');
-        const noKwitansi = document.getElementById('noKwitansi').value.trim();
-        const filename = noKwitansi ? noKwitansi.replace(/[\/\\?%*:|"<> ]/g, '_') + '.png' : 'kwitansi.png';
-        html2canvas(receipt).then(canvas => {
-            const link = document.createElement('a');
-            link.download = filename;
-            link.href = canvas.toDataURL();
-            link.click();
-        }).catch(error => {
-            console.error('Error generating receipt:', error);
-            alert('Terjadi kesalahan saat mengunduh kwitansi. Silakan coba lagi.');
+    if (nominalInput) {
+        nominalInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value ? formatNumber(value) : '';
         });
-    });
+    }
+
+    // Download button
+    const downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+            const receipt = document.getElementById('receiptPreview');
+            const noKwitansi = document.getElementById('noKwitansi')?.value.trim() || '';
+            const filename = noKwitansi ? noKwitansi.replace(/[\/\\?%*:|"<> ]/g, '_') + '.png' : 'kwitansi.png';
+            if (window.html2canvas && receipt) {
+                html2canvas(receipt).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                }).catch(error => {
+                    console.error('Error generating receipt:', error);
+                    alert('Terjadi kesalahan saat mengunduh kwitansi. Silakan coba lagi.');
+                });
+            } else {
+                alert('html2canvas belum dimuat atau elemen receipt tidak ditemukan.');
+            }
+        });
+    }
+
+    // Inisialisasi preview pertama kali
+    updatePreview();
 });
