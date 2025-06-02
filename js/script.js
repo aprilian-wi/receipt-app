@@ -1,4 +1,4 @@
-// Tambahkan fungsi utility di sini
+// Fungsi utility
 
 function formatNumber(number) {
     number = (typeof number === 'string' ? number.replace(/\D/g, '') : number).toString();
@@ -27,7 +27,7 @@ function formatDate(dateStr) {
     return `${day}/${month}/${year}`;
 }
 
-// ...lanjutkan dengan isi script.js Anda yang sudah ada (updatePreview, event listener, dll)
+// --- Lanjutkan kode utama script.js Anda di bawah ---
 
 function updatePreview() {
     const getValue = id => document.getElementById(id)?.value || '';
