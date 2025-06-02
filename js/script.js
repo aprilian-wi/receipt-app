@@ -1,7 +1,33 @@
-// Pastikan fungsi berikut sudah ada dan benar:
-// function convertNumberToWords(number) { ... }
-// function formatNumber(number) { ... }
-// function formatDate(dateStr) { ... }
+// Tambahkan fungsi utility di sini
+
+function formatNumber(number) {
+    number = (typeof number === 'string' ? number.replace(/\D/g, '') : number).toString();
+    if (!number) return '0';
+    return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function convertNumberToWords(number) {
+    const satuan = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+    number = parseInt(number, 10);
+    if (isNaN(number) || number === 0) return "nol rupiah";
+    if (number < 12) return satuan[number] + " rupiah";
+    if (number < 20) return convertNumberToWords(number - 10) + " belas rupiah";
+    if (number < 100) return convertNumberToWords(Math.floor(number / 10)) + " puluh " + convertNumberToWords(number % 10);
+    if (number < 200) return "seratus " + convertNumberToWords(number - 100);
+    if (number < 1000) return convertNumberToWords(Math.floor(number / 100)) + " ratus " + convertNumberToWords(number % 100);
+    if (number < 2000) return "seribu " + convertNumberToWords(number - 1000);
+    if (number < 1000000) return convertNumberToWords(Math.floor(number / 1000)) + " ribu " + convertNumberToWords(number % 1000);
+    if (number < 1000000000) return convertNumberToWords(Math.floor(number / 1000000)) + " juta " + convertNumberToWords(number % 1000000);
+    return number.toString();
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return "-";
+    const [year, month, day] = dateStr.split('-');
+    return `${day}/${month}/${year}`;
+}
+
+// ...lanjutkan dengan isi script.js Anda yang sudah ada (updatePreview, event listener, dll)
 
 function updatePreview() {
     const getValue = id => document.getElementById(id)?.value || '';
