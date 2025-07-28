@@ -11,13 +11,21 @@ function convertNumberToWords(number) {
     number = parseInt(number, 10);
     if (isNaN(number) || number === 0) return "nol rupiah";
     if (number < 12) return satuan[number] + " rupiah";
-    if (number < 20) return convertNumberToWords(number - 10) + " belas rupiah";
-    if (number < 100) return convertNumberToWords(Math.floor(number / 10)) + " puluh " + convertNumberToWords(number % 10);
-    if (number < 200) return "seratus " + convertNumberToWords(number - 100);
-    if (number < 1000) return convertNumberToWords(Math.floor(number / 100)) + " ratus " + convertNumberToWords(number % 100);
-    if (number < 2000) return "seribu " + convertNumberToWords(number - 1000);
-    if (number < 1000000) return convertNumberToWords(Math.floor(number / 1000)) + " ribu " + convertNumberToWords(number % 1000);
-    if (number < 1000000000) return convertNumberToWords(Math.floor(number / 1000000)) + " juta " + convertNumberToWords(number % 1000000);
+    if (number < 20) return satuan[number - 10] + " belas rupiah";
+    if (number < 100) return satuan[Math.floor(number / 10)] + " puluh" + (number % 10 !== 0 ? " " + satuan[number % 10] + " rupiah" : " rupiah");
+    if (number < 200) return "seratus" + (number - 100 !== 0 ? " " + convertNumberToWords(number - 100) : " rupiah");
+    if (number < 1000) return satuan[Math.floor(number / 100)] + " ratus" + (number % 100 !== 0 ? " " + convertNumberToWords(number % 100) : " rupiah");
+    if (number < 2000) return "seribu" + (number - 1000 !== 0 ? " " + convertNumberToWords(number - 1000) : " rupiah");
+    if (number < 1000000) {
+        const ribu = Math.floor(number / 1000);
+        const sisa = number % 1000;
+        return convertNumberToWords(ribu) + " ribu" + (sisa !== 0 ? " " + convertNumberToWords(sisa) : " rupiah");
+    }
+    if (number < 1000000000) {
+        const juta = Math.floor(number / 1000000);
+        const sisa = number % 1000000;
+        return convertNumberToWords(juta) + " juta" + (sisa !== 0 ? " " + convertNumberToWords(sisa) : " rupiah");
+    }
     return number.toString();
 }
 
