@@ -7,35 +7,30 @@ function formatNumber(number) {
 }
 
 function convertNumberToWords(number) {
-    const satuan = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
-    number = parseInt(number, 10);
-    if (isNaN(number) || number === 0) return "nol rupiah";
-    if (number < 12) return satuan[number] + " rupiah";
-    if (number < 20) return satuan[number - 10] + " belas rupiah";
-    if (number < 100) {
-        let puluhan = Math.floor(number / 10);
-        let sisa = number % 10;
-        return satuan[puluhan] + " puluh" + (sisa ? " " + satuan[sisa] : "") + " rupiah";
-    }
-    if (number < 200) return "seratus" + (number > 100 ? " " + convertNumberToWords(number - 100) : "");
-    if (number < 1000) {
-        let ratusan = Math.floor(number / 100);
-        let sisa = number % 100;
-        return satuan[ratusan] + " ratus" + (sisa ? " " + convertNumberToWords(sisa) : "") + " rupiah";
-    }
-    if (number < 2000) return "seribu" + (number > 1000 ? " " + convertNumberToWords(number - 1000) : "");
-    if (number < 1000000) {
-        let ribuan = Math.floor(number / 1000);
-        let sisa = number % 1000;
-        return convertNumberToWords(ribuan) + " ribu" + (sisa ? " " + convertNumberToWords(sisa) : "") + " rupiah";
-    }
-    if (number < 1000000000) {
-        let jutaan = Math.floor(number / 1000000);
-        let sisa = number % 1000000;
-        return convertNumberToWords(jutaan) + " juta" + (sisa ? " " + convertNumberToWords(sisa) : "") + " rupiah";
-    }
-    return number.toString() + " rupiah";
+    const toWords = (num) => {
+        const satuan = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+        if (num < 12) return satuan[num];
+        if (num < 20) return toWords(num - 10) + " belas";
+        if (num < 100) return satuan[Math.floor(num / 10)] + " puluh" + (num % 10 ? " " + toWords(num % 10) : "");
+        if (num < 200) return "seratus" + (num % 100 ? " " + toWords(num % 100) : "");
+        if (num < 1000) return satuan[Math.floor(num / 100)] + " ratus" + (num % 100 ? " " + toWords(num % 100) : "");
+        if (num < 2000) return "seribu" + (num % 1000 ? " " + toWords(num % 1000) : "");
+        if (num < 1000000) return toWords(Math.floor(num / 1000)) + " ribu" + (num % 1000 ? " " + toWords(num % 1000) : "");
+        if (num < 1000000000) return toWords(Math.floor(num / 1000000)) + " juta" + (num % 1000000 ? " " + toWords(num % 1000000) : "");
+        return num.toString();
+    };
+
+    number = parseInt(String(number).replace(/\D/g, ''), 10);
+    if (isNaN(number) || number === 0) return "Nol Rupiah";
+
+    let words = toWords(number).trim().replace(/\s+/g, ' ');
+
+    words = words.charAt(0).toUpperCase() + words.slice(1);
+    words = words.replace(/ ribu/g, ' Ribu').replace(/ juta/g, ' Juta');
+
+    return words + " Rupiah";
 }
+
 
 function formatDate(dateStr) {
     if (!dateStr) return "-";
