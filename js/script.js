@@ -12,21 +12,29 @@ function convertNumberToWords(number) {
     if (isNaN(number) || number === 0) return "nol rupiah";
     if (number < 12) return satuan[number] + " rupiah";
     if (number < 20) return satuan[number - 10] + " belas rupiah";
-    if (number < 100) return satuan[Math.floor(number / 10)] + " puluh" + (number % 10 !== 0 ? " " + satuan[number % 10] + " rupiah" : " rupiah");
-    if (number < 200) return "seratus" + (number - 100 !== 0 ? " " + convertNumberToWords(number - 100) : " rupiah");
-    if (number < 1000) return satuan[Math.floor(number / 100)] + " ratus" + (number % 100 !== 0 ? " " + convertNumberToWords(number % 100) : " rupiah");
-    if (number < 2000) return "seribu" + (number - 1000 !== 0 ? " " + convertNumberToWords(number - 1000) : " rupiah");
+    if (number < 100) {
+        let puluhan = Math.floor(number / 10);
+        let sisa = number % 10;
+        return satuan[puluhan] + " puluh" + (sisa ? " " + satuan[sisa] : "") + " rupiah";
+    }
+    if (number < 200) return "seratus" + (number > 100 ? " " + convertNumberToWords(number - 100) : "");
+    if (number < 1000) {
+        let ratusan = Math.floor(number / 100);
+        let sisa = number % 100;
+        return satuan[ratusan] + " ratus" + (sisa ? " " + convertNumberToWords(sisa) : "") + " rupiah";
+    }
+    if (number < 2000) return "seribu" + (number > 1000 ? " " + convertNumberToWords(number - 1000) : "");
     if (number < 1000000) {
-        const ribu = Math.floor(number / 1000);
-        const sisa = number % 1000;
-        return convertNumberToWords(ribu) + " ribu" + (sisa !== 0 ? " " + convertNumberToWords(sisa) : " rupiah");
+        let ribuan = Math.floor(number / 1000);
+        let sisa = number % 1000;
+        return convertNumberToWords(ribuan) + " ribu" + (sisa ? " " + convertNumberToWords(sisa) : "") + " rupiah";
     }
     if (number < 1000000000) {
-        const juta = Math.floor(number / 1000000);
-        const sisa = number % 1000000;
-        return convertNumberToWords(juta) + " juta" + (sisa !== 0 ? " " + convertNumberToWords(sisa) : " rupiah");
+        let jutaan = Math.floor(number / 1000000);
+        let sisa = number % 1000000;
+        return convertNumberToWords(jutaan) + " juta" + (sisa ? " " + convertNumberToWords(sisa) : "") + " rupiah";
     }
-    return number.toString();
+    return number.toString() + " rupiah";
 }
 
 function formatDate(dateStr) {
